@@ -1,21 +1,27 @@
-# menu.py
+# menu adaptado para juegos en carpetas específicas
 import pygame
 import subprocess
 from control_usb import leer_boton
+import os
 
 pygame.init()
-pantalla = pygame.display.set_mode((480, 320))  # Ajusta si tu pantalla es diferente
+pantalla = pygame.display.set_mode((480, 320))
 fuente = pygame.font.Font(None, 40)
 
-juegos = ['juego1.py', 'juego2.py']
+# Nombres de carpetas y archivos principales por juego
+juegos = [
+    ("anathema", "anathema_adaptado_botones.py"),
+    ("juego2", "main.py")
+]
+
 seleccion = 0
 corriendo = True
 
 def dibujar_menu():
     pantalla.fill((0, 0, 0))
-    for i, juego in enumerate(juegos):
+    for i, (nombre, _) in enumerate(juegos):
         color = (255, 255, 0) if i == seleccion else (150, 150, 150)
-        texto = fuente.render(juego, True, color)
+        texto = fuente.render(nombre, True, color)
         pantalla.blit(texto, (100 + i * 200, 150))
     pygame.display.flip()
 
@@ -28,7 +34,12 @@ while corriendo:
     elif evento == "RIGHT":
         seleccion = (seleccion + 1) % len(juegos)
     elif evento == "A":
-        subprocess.run(["python3", juegos[seleccion]])
+        carpeta, archivo = juegos[seleccion]
+        ruta = os.path.join(carpeta, archivo)
+        if os.path.exists(ruta):
+            subprocess.run(["python3", ruta])
+        else:
+            print(f"No se encontró el archivo: {ruta}")
     elif evento == "MENU":
         corriendo = False
 
